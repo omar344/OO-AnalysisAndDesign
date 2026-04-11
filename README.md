@@ -141,12 +141,70 @@ class Dog implements Speakable { public void speak() { ... } }
 
 #### Coupling & Cohesion
 
-Two key metrics are used to evaluate the health of a design:
+Two key metrics are used to evaluate design complexity. Since complexity applies to both classes and the methods within them, the term **module** is used to refer to any program unit.
 
-| Metric | Definition | Target |
+> 💡 The average person can hold roughly **7 things** in short-term memory (Miller, 1956). Once design complexity exceeds what a developer can mentally handle, bugs become more frequent. Keeping modules simple is critical.
+
+---
+
+**Coupling** measures the complexity of connecting a module to other modules.
+
+- **Tight coupling** — a module is highly reliant on others (hard to reuse or replace, like puzzle pieces).
+- **Loose coupling** — a module connects easily to others (interchangeable and flexible, like Lego blocks).
+
+**Aim for loose (low) coupling.** When evaluating coupling, consider three factors:
+
+| Factor | Definition | Goal |
 |---|---|---|
-| **Coupling** | The degree of dependency between modules | **Loose** — changes in one module should minimally affect others |
-| **Cohesion** | The clarity and focus of a module's purpose | **High** — each module should do one thing well |
+| **Degree** | Number of connections between the module and others | Keep it small — few parameters or narrow interfaces |
+| **Ease** | How obvious the connections are | Understandable without reading the implementation |
+| **Flexibility** | How interchangeable the connected modules are | Other modules should be easily replaceable |
+
+---
+
+**Cohesion** measures the clarity of purpose *within* a module.
+
+- **High cohesion** — the module performs one task with a single, clear responsibility.
+- **Low cohesion** — the module serves more than one purpose or has an unclear role.
+
+**Aim for high cohesion.** If a module has more than one responsibility, it should be split.
+
+---
+
+#### Example — Refactoring for Cohesion & Coupling
+
+**❌ Poor design:** A single `Sensor` class handles both humidity and temperature via a flag parameter:
+
+```java
+// Low cohesion — unclear purpose
+// Tight coupling — caller must know internal flag values
+sensor.get(0); // humidity?
+sensor.get(1); // temperature?
+```
+
+The `get(flag)` method hides behavior behind a control flag, forcing callers to break encapsulation just to use it. This produces **low cohesion** and **tight coupling** at the same time.
+
+**✅ Better design:** Split into two focused classes:
+
+```java
+// High cohesion — one clear purpose each
+// Loose coupling — intent is obvious, no hidden flags
+humiditySensor.get();    // clearly returns humidity
+temperatureSensor.get(); // clearly returns temperature
+```
+
+Each class now has a single well-defined responsibility, and callers no longer need to understand internals to use them correctly.
+
+---
+
+#### The Coupling–Cohesion Trade-off
+
+These two metrics exist in tension with each other:
+
+- Simplifying a module to achieve **high cohesion** may increase its dependence on other modules → raises coupling.
+- Simplifying connections to achieve **low coupling** may force a module to take on more responsibilities → lowers cohesion.
+
+Good design finds the right balance — distributing responsibility across modules without creating excessive interdependencies.
 
 ---
 
