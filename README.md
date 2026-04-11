@@ -13,6 +13,7 @@
     - [2. Encapsulation](#2-encapsulation)
     - [3. Decomposition](#3-decomposition)
     - [4. Generalization](#4-generalization)
+  - [Separation of Concerns](#separation-of-concerns)
   - [Design Quality](#design-quality)
     - [Coupling & Cohesion](#coupling--cohesion)
     - [UML Diagram Types](#uml-diagram-types)
@@ -134,6 +135,95 @@ class Dog implements Speakable { public void speak() { ... } }
 ```
 
 > **Note on Java:** Multiple class inheritance is not supported (to avoid data ambiguity), but a class may implement multiple interfaces — achieving the same flexibility without conflict.
+
+---
+
+### Separation of Concerns
+
+A **concern** is anything that matters in providing a solution to a problem. Separation of concerns is the principle of addressing each concern in its own dedicated section of the system, rather than tangling multiple responsibilities together.
+
+> Think of a supermarket: butchering meat, baking bread, accepting payment, and stocking shelves are all handled by **separate departments** — each focused on its own concern. Well-designed software works the same way.
+
+Separation of concerns is not a standalone rule — it is the underlying idea that runs through all four OO design principles:
+
+| Principle | How it applies separation of concerns |
+|---|---|
+| **Abstraction** | Each concept in the problem space becomes its own abstraction with relevant attributes and behaviors |
+| **Encapsulation** | Each abstraction is contained in its own class; implementation details are hidden behind an interface |
+| **Decomposition** | A whole can be split into separate, focused parts |
+| **Generalization** | Common traits are separated out and moved into a superclass |
+
+---
+
+#### Example — Smartphone Design
+
+Consider a `SmartPhone` class that handles both camera and phone functionality in a single class:
+
+```java
+// Poor design — low cohesion, no modularity
+class SmartPhone {
+    // Camera attributes + behaviors
+    // Phone attributes + behaviors
+    // All mixed together
+}
+```
+
+**Problems with this design:**
+- Low cohesion — camera and phone behaviors are unrelated but bundled together.
+- No modularity — the camera and phone cannot be accessed, reused, or replaced independently.
+- Any change to one concern risks breaking the other.
+
+---
+
+**Better design:** Separate the two concerns into their own interfaces and implementing classes, and let `SmartPhone` act as a **coordinator**:
+
+```java
+// Define concerns as interfaces
+interface Camera { void takePicture(); }
+interface Phone  { void makeCall();    }
+
+// Implement each concern independently
+class FirstGenCamera    implements Camera { ... }
+class TraditionalPhone  implements Phone  { ... }
+
+// SmartPhone composes both — knows nothing about their internals
+class SmartPhone {
+    private Camera camera;
+    private Phone  phone;
+
+    public SmartPhone(Camera camera, Phone phone) {
+        this.camera = camera;
+        this.phone  = phone;
+    }
+
+    public void takePicture() { camera.takePicture(); }
+    public void makeCall()    { phone.makeCall();     }
+}
+```
+
+Now the `SmartPhone` class simply **delegates** to each component. The camera and phone know nothing about each other, but are composed together by the smartphone.
+
+To swap the camera for a newer model, only the instantiation needs to change — the `SmartPhone` class itself is untouched:
+
+```java
+// Swapping components without touching SmartPhone
+SmartPhone phone = new SmartPhone(new HDCamera(), new TraditionalPhone());
+```
+
+---
+
+#### Trade-offs
+
+Applying separation of concerns improves **cohesion** within each class, but introduces a trade-off:
+
+| Effect | Description |
+|---|---|
+| ✅ Higher cohesion | Each class has a single, clear responsibility |
+| ✅ More modularity | Components can be reused, swapped, or extended independently |
+| ✅ Easier maintenance | Changes to one concern do not ripple into others |
+| ⚠️ Increased coupling | `SmartPhone` now depends on the `Camera` and `Phone` interfaces |
+
+The goal is not to eliminate coupling entirely, but to ensure that dependencies are on **interfaces** (stable contracts) rather than concrete implementations — keeping the system flexible.
 
 ---
 
