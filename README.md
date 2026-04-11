@@ -78,7 +78,26 @@ Detailed blueprints are produced for developers to implement directly.
 
 #### Conceptual Integrity
 
-The system should feel as if it were designed by a single mind. This is maintained through consistent conventions and regular code reviews across the team.
+Conceptual integrity means designing and implementing software in a consistent manner — so that even if multiple people worked on it, it feels as if a single mind guided all the work.
+
+> "It is better to have a system omit certain anomalous features and improvements, but to reflect one set of design ideas, than to have one that contains many good but independent and uncoordinated ideas." — Fred Brooks, *The Mythical Man-Month*
+
+This does not mean developers cannot voice opinions. It means the team agrees on design principles and conventions, and follows them consistently throughout the project.
+
+**Why it matters:**
+
+Think of software as a building. Conceptual integrity is the consistency of its structure and design. Without a clear blueprint and a guiding architect, different workers may use different materials and structures — resulting in an unorganized, inconsistent, and potentially unstable system. A consistent codebase is easier to read, easier to extend, and easier to hand off to new team members.
+
+**How to achieve it:**
+
+| Approach | Description |
+|---|---|
+| Communication | Agile practices like daily stand-ups and sprint retrospectives help teams agree on libraries, methods, and naming conventions |
+| Code reviews | Systematic peer examination of written code keeps developers consistent with each other and catches deviations early |
+| Design principles & patterns | Using agreed interfaces and design patterns creates conventional, predictable class structures |
+| Strong architecture | A well-defined underlying design guides how all parts of the system are organized and interact |
+| Unifying concepts | Finding common ground between seemingly different things reduces special cases — e.g., in Unix, every resource is treated as a file, so the same operations apply everywhere |
+| Core commit group | Restricting code merges to a small core group ensures all changes align with the overall architecture and design vision |
 
 ---
 
