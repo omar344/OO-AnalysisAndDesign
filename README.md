@@ -16,6 +16,7 @@
   - [Separation of Concerns](#separation-of-concerns)
   - [Design Quality](#design-quality)
     - [Coupling & Cohesion](#coupling--cohesion)
+    - [Information Hiding](#information-hiding)
     - [UML Diagram Types](#uml-diagram-types)
     - [Model Checking](#model-checking)
 
@@ -295,6 +296,52 @@ These two metrics exist in tension with each other:
 - Simplifying connections to achieve **low coupling** may force a module to take on more responsibilities → lowers cohesion.
 
 Good design finds the right balance — distributing responsibility across modules without creating excessive interdependencies.
+
+---
+
+#### Information Hiding
+
+Information hiding is the practice of giving each module access to only the information it needs to do its job — and nothing more. It directly supports loose coupling by ensuring modules depend on stable interfaces rather than changeable implementation details.
+
+Things that are likely to change (implementation details) should be hidden. Things that should stay stable (assumptions and contracts) should be revealed through interfaces.
+
+This allows developers to work on a module independently — others can use it through its interface without needing to know how it works internally.
+
+Information hiding is applied in practice through encapsulation and access modifiers.
+
+##### Access Modifiers in Java
+
+Java provides four levels of access control:
+
+| Modifier | Accessible By |
+|---|---|
+| `public` | Any class in the system |
+| `protected` | The encapsulating class, its subclasses, and classes in the same package |
+| `default` (no keyword) | The encapsulating class and classes in the same package only |
+| `private` | The encapsulating class only |
+
+```java
+public class Person {
+    private String name;       // hidden — only Person can access this directly
+    protected int age;         // accessible to subclasses and same-package classes
+    public String nationality; // accessible by any class
+
+    public void sleep() {      // behavior exposed through public interface
+        // implementation hidden — callers invoke it but cannot change how it works
+    }
+}
+```
+
+> **Note:** A public method exposes a behavior to the outside world, but the implementation of that behavior remains hidden through encapsulation. Callers can invoke it — they cannot change how it works.
+
+##### Why Information Hiding Matters
+
+| Benefit | Description |
+|---|---|
+| **Flexibility** | Implementation details can change without affecting other modules |
+| **Reusability** | Modules expose clean interfaces that others can depend on |
+| **Maintainability** | Bugs are contained — internal changes don't ripple outward |
+| **Parallel development** | Teams can work on separate modules simultaneously, relying only on agreed interfaces |
 
 ---
 
