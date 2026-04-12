@@ -139,10 +139,11 @@ Systems are broken into smaller, manageable parts. The nature of each part-whole
 
 #### 4. Generalization
 
-Common attributes and behaviors are factored into a **Superclass** (parent), which **Subclasses** (children) inherit — reducing redundancy and centralizing shared logic.
+Reducing redundancy by extracting shared behavior into more general structures.
 
-- **Inheritance** — Expresses an *"is-a"* relationship. In Java: `extends`.
-- **Interfaces** — Define *what* an object can do (method signatures only), not *how*. In Java: `implements`. This enables **polymorphism** — the same behavior can be implemented differently by different classes.
+**Inheritance** — Subclasses extend superclasses via `extends`, inheriting attributes and behaviors while adding specialization. Represents an *"is-a"* relationship.
+
+**Interfaces** — Define *what* an object can do (method signatures only), not *how*. Implemented via `implements`. This enables **polymorphism** — the same behavior can be implemented differently by different classes.
 
 ```java
 // Inheritance
@@ -155,6 +156,118 @@ class Dog implements Speakable { public void speak() { ... } }
 ```
 
 > **Note on Java:** Multiple class inheritance is not supported (to avoid data ambiguity), but a class may implement multiple interfaces — achieving the same flexibility without conflict.
+
+---
+
+#### Using Inheritance Correctly
+
+Inheritance is a powerful design tool that can produce clean, reusable, and maintainable code — but it is also one of the most commonly misused principles. Applying it incorrectly creates more problems than it solves.
+
+**Ask yourself before using inheritance:**
+- Does the subclass represent a more *specific kind* of the superclass?
+- Does the subclass add meaningful new attributes or behaviors beyond what the superclass already provides?
+- Can the subclass be substituted anywhere the superclass is expected, without breaking behavior?
+
+If the answer to any of these is **no**, inheritance is likely the wrong tool.
+
+---
+
+#### Two Signs of Inheritance Misuse
+
+**❌ Sign 1 — Inheriting just to reuse code**
+
+If a subclass exists only to reuse the superclass's attributes or methods without adding anything meaningful, the subclass serves no real purpose.
+
+```java
+// Poor use of inheritance
+class PepperoniPizza extends Pizza {
+    public PepperoniPizza(String crust, String size) {
+        super(crust, size);
+        this.addTopping("pepperoni"); // nothing new — Pizza can already do this
+    }
+}
+
+// Better — just use the Pizza class directly
+Pizza pepperoni = new Pizza("thin", "large");
+pepperoni.addTopping("pepperoni");
+```
+
+The `PepperoniPizza` subclass adds no unique behavior — it is simply a `Pizza` with a topping. The superclass alone is sufficient, and the subclass only adds unnecessary complexity.
+
+---
+
+**❌ Sign 2 — Violating the Liskov Substitution Principle (LSP)**
+
+> A subclass should be substitutable for its superclass — meaning it must not change or break the behavior that the superclass defines.
+
+If a subclass overrides a superclass method in a way that fundamentally changes its expected behavior, the LSP is violated.
+
+```java
+// Superclass defines behaviors for all animals
+class Animal {
+    public void eat()  { ... }
+    public void walk() { ... }
+    public void run()  { ... }
+}
+
+// Whale overrides walk() and run() — behaviors it cannot perform
+class Whale extends Animal {
+    @Override
+    public void walk() { swim(); } // violates LSP — a Whale is not substitutable for Animal
+    @Override
+    public void run()  { swim(); }
+}
+```
+
+A `Whale` cannot walk or run. Overriding those methods with swimming behavior means a `Whale` no longer behaves the way any consumer of `Animal` would expect. The LSP is broken.
+
+**Real-world example of bad inheritance — Java's `Stack` class:**
+
+Java's built-in `Stack` class inherits from `Vector`. A stack is a strictly *last-in, first-out* structure with only three expected operations: `push`, `pop`, and `peek`. However, because of this inheritance, `Stack` also exposes:
+- `get(index)` — retrieve element at a specific position
+- `indexOf(element)` — find an element's position
+- `insertElementAt(index)` — insert at an arbitrary position
+
+None of these belong on a stack. This is a widely cited example of inheritance being used purely for code reuse, at the cost of correctness and clean design.
+
+---
+
+#### When to Use Decomposition Instead
+
+If inheritance does not feel right, decomposition is often the better choice. A good rule of thumb:
+
+| Situation | Prefer |
+|---|---|
+| Class B is a more specific *kind* of Class A | **Inheritance** |
+| Class A *has* or *uses* Class B as a component | **Decomposition** |
+
+```java
+// Wrong — SmartPhone is not a type of Phone
+class SmartPhone extends Phone {
+    public void takePicture() { ... } // camera behavior bolted on
+}
+
+// Right — SmartPhone is composed of a Phone and a Camera
+class SmartPhone {
+    private Camera camera;
+    private Phone phone;
+    // delegates to each component
+}
+```
+
+A smartphone is not a *kind of* phone — it *has* a phone and a camera. Decomposition models this correctly, while inheritance produces a misleading and fragile design.
+
+---
+
+#### Summary
+
+| Principle | Correct use | Misuse |
+|---|---|---|
+| **Inheritance** | Subclass is a genuine specialization of the superclass | Subclass exists only to reuse code, or breaks expected behavior |
+| **LSP** | Subclass can replace superclass without altering behavior | Subclass overrides methods in ways that change or remove expected functionality |
+| **Decomposition** | Object *has* or *uses* another object as a part | Avoided in favor of inheritance when inheritance is not semantically correct |
+
+> Inheritance is a technique, not a goal. The goal is always flexible, reusable, and maintainable software — inheritance is just one tool to help get there.
 
 ---
 
